@@ -1,0 +1,12 @@
+matplotlib==3.7.5
+numpy==2.1.1
+open3d==0.18.0
+opencv_python==4.10.0.84
+pandas==2.2.2
+pgzip==0.3.5
+pydicom==3.0.0
+spacecutter==0.2.1
+timm_3d==1.0.0
+torch==2.1.2
+torchio==0.19.9
+tqdm==4.66.4
