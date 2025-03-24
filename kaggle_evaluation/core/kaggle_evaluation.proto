@@ -1,0 +1,66 @@
+// Defines the proto service for KaggleEvaluation communication, aiming to provide native
+// support for passing a variety of python primitives + common data science
+// objects, and nested objects thereof.
+
+syntax = "proto3";
+
+package kaggle_evaluation_client;
+
+service KaggleEvaluationService {
+  rpc Send(KaggleEvaluationRequest) returns (KaggleEvaluationResponse) {};
+}
+
+message KaggleEvaluationRequest {
+  string name = 1;
+  // Support generic python method calls using standard args / kwargs format.
+  repeated Payload args = 2;
+  map<string, Payload> kwargs = 3;
+}
+
+message KaggleEvaluationResponse {
+  Payload payload = 1;
+}
+
+// Core object representing a python value.
+message Payload {
+  oneof value {
+    // Primitives
+    string str_value = 1;
+    bool bool_value = 2;
+    sint64 int_value = 3;
+    float float_value = 4;
+    // Value is ignored, being set at all means `None`
+    bool none_value = 5;
+
+    // Iterables for nested types
+    PayloadList list_value = 6;
+    PayloadList tuple_value = 7;
+    // Only supports dict with keys of type str and values that are serializable
+    // to Payload as well.
+    PayloadMap dict_value = 8;
+
+    // Allowlisted special types
+    // pandas.DataFrame
+    bytes pandas_dataframe_value = 9;
+    // polars.DataFrame
+    bytes polars_dataframe_value = 10;
+    // pandas.Series
+    bytes pandas_series_value = 11;
+    // polars.Series
+    bytes polars_series_value = 12;
+    // numpy.ndarray
+    bytes numpy_array_value = 13;
+    // numpy.scalar. Distinct from numpy.ndarray to avoid issues with dimensionless numpy arrays
+    bytes numpy_scalar_value = 14;
+    // io.BytesIO
+    bytes bytes_io_value = 15;
+  }
+}
+
+message PayloadList {
+  repeated Payload payloads = 1;
+}
+
+message PayloadMap {
+  map<string, Payload> payload_map = 1;
+}
